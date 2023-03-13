@@ -1,0 +1,2 @@
+server_dir=E:/a3master
+mod_dirs=D:/a3mods;E:/a3mods;G:/a3mods;

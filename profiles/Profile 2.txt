@@ -1,0 +1,2 @@
+server_dir=D:/Blizzard
+mod_dirs=G:/a3mods/@RHS@RHSUSAF/addons
