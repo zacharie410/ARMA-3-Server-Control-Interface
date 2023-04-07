@@ -15,6 +15,7 @@ Python 3.x installed on your machine
 ## Usage
 - Edit the configuration file (config.json) with your desired server directory, mod directories, and startup parameters.
 - Start the script by running the following command in your terminal: `python main.py`
+- OR: Just run the script through your visual studio code GUI. You may need the extension for python.
 - Use the graphical interface to manage your server.
 ## Recommended Configurations and Usage
 - My config involved using my local hidden /!Workshop folder to handle my mod updates through my steam interface
