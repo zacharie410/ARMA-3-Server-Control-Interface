@@ -122,12 +122,12 @@ def create_profile_edit(profile_name):
 
     # Create the update mod keys button
     update_button = tk.Button(button_frame, text='Update Mod Keys', font=('Helvetica', 14), 
-                              command=lambda: update_mod_keys(keys_dir, mod_dirs))
+                              command=lambda: update_mod_keys(keys_dir, mod_dirs_input.get()))
     update_button.pack(side=tk.LEFT, padx=10)
 
     # Create the save button
     save_button = tk.Button(footer_frame, text='Save Profile', font=('Helvetica', 14), 
-                            command=lambda: save_profile(profile_name, server_dir_input, mod_dirs_input))
+                            command=lambda: save_profile(profile_name, server_dir_input.get(), mod_dirs_input.get()))
     save_button.pack(side=tk.LEFT, padx=10)
 
     # Create the back button
