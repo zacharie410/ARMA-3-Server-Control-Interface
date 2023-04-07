@@ -17,8 +17,8 @@ Python 3.x installed on your machine
 - Edit the configuration file (config.json) with your desired server directory, mod directories, and startup parameters.
 - Start the script by running the following command in your terminal: `python main.py`
 - Use the graphical interface to manage your server.
-License
+# License
 This project is licensed under the Apache License 2.0.
 
-Contributing
+# Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
