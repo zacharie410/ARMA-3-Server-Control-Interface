@@ -12,11 +12,15 @@ ARMA 3 server installed on your machine
 Python 3.x installed on your machine
 ## Installation
 - Clone this repository to your local machine.
-- Install the required Python packages by running the following command in your terminal: `pip install -r requirements.txt`
 ## Usage
 - Edit the configuration file (config.json) with your desired server directory, mod directories, and startup parameters.
 - Start the script by running the following command in your terminal: `python main.py`
 - Use the graphical interface to manage your server.
+## Recommended Configurations and Usage
+- My config involved using my local hidden /!Workshop folder to handle my mod updates through my steam interface
+- With the click of a button, you can wipe all .bikey files from your server keys directory
+- the .bikey files will be replaced with the most recently updated .bikey file from the mod directory specified in config (in my case my auto updated /!Workshop mods)
+
 # License
 This project is licensed under the Apache License 2.0.
 
