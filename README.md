@@ -1,6 +1,8 @@
 # ARMA 3 Server Control
 ARMA 3 Server Control is a Python script that simplifies the process of managing an ARMA 3 server by automating common tasks and providing a graphical interface for easy server management.
 
+![ARMA 3 SERVER CONTROL INTERFACE](https://repository-images.githubusercontent.com/613191486/77209a21-3028-4626-9789-eb506c8fb03d)
+
 ## Features
 - Simple graphical interface for easy server management
 - Automatic updating of mod keys
