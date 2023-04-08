@@ -2,18 +2,80 @@ import os
 import subprocess
 import tkinter as tk
 from tkinter import filedialog
+from pathlib import Path
+import shutil
+import datetime
 import json
 
-# Import the batch functions from a separate file
-from batch_functions import update_mod_keys, start_server, stop_server
+# Load the configuration from the config file
+with open('config.json') as f:
+    config = json.load(f)
 
 # Set up the default server directory and mod directories
-server_dir = r'E:\a3master'
+server_dir = config['server_dir']
 keys_dir = os.path.join(server_dir, 'keys')
-mod_dirs = [r'E:\a3mods', r'D:\a3mods', r'G:\a3mods']
+mod_dirs = config['mod_dirs']
+server_params = config['start_params']
 
 if not os.path.exists('profiles'):
     os.makedirs('profiles')
+
+
+def update_mod_keys(keys_dir, mod_dirs):
+    # clear all .bikey files from the keys folder
+    print('Clearing old .bikey files from the keys folder...')
+    for file in Path(keys_dir).glob('*.bikey'):
+        if file.name != 'a3.bikey':
+            file.unlink()
+
+    print('Updating mod keys...')
+    mod_last_modified = {}
+    for mods_dir in mod_dirs:
+        for mod_dir in Path(mods_dir).rglob('*'):
+            if mod_dir.is_dir():
+                mod_dir_sanitized = ''.join(c for c in str(mod_dir) if c.isalnum() or c in '._-\\/ ')
+                if mod_dir_sanitized:
+                    if mod_dir_sanitized not in mod_last_modified:
+                        mod_last_modified[mod_dir_sanitized] = datetime.datetime.fromtimestamp(0)
+                    for file in mod_dir.glob('**/*.bikey'):
+                        mod_time = os.path.getmtime(str(file))
+                        mod_time_dt = datetime.datetime.fromtimestamp(mod_time)
+                        if mod_time_dt > mod_last_modified[mod_dir_sanitized]:
+                            mod_last_modified[mod_dir_sanitized] = mod_time_dt
+                            key_file = Path(keys_dir) / file.name
+                            shutil.copy(str(file), str(key_file))
+                            print(f'Copied file: {file} to {key_file}')
+
+    print('Mod keys updated.')
+
+def start_server(server_dir, mod_dirs):
+    # Search for the server executable in the server directory
+    for file in os.listdir(server_dir):
+        if file.startswith('arma3server_x64'):
+            server_exe = os.path.join(server_dir, file)
+            break
+    else:
+        print('Error: arma3server_x64 executable not found in specified server directory')
+        return
+
+    # Search for mod folders in the mod directories
+    mods = []
+    for mod_dir in mod_dirs.split(';'):
+            for mod_folder in os.listdir(mod_dir):
+                if os.path.isdir(os.path.join(mod_dir, mod_folder)):
+                    mods.append(os.path.join(mod_dir, mod_folder))
+
+    # Build the command line arguments
+    args = [server_exe] + server_params.split() + ['-mod=' + ';'.join(mods)]
+
+    # Start the server process
+    subprocess.Popen(args, creationflags=subprocess.CREATE_NEW_CONSOLE)
+
+    
+def stop_server():
+    subprocess.run(['taskkill', '/f', '/im', 'arma3server_x64.exe'])
+    print('Server stopped.')
+
 
 # Function to create the main menu
 def edit_profile_and_destroy_main(profile_name, main_window):
@@ -27,7 +89,7 @@ def return_to_menu(profile_window):
     profile_window.destroy()
     create_main_menu()
 
-
+# Rest of your code follows
 def create_main_menu():
     # Create the main window
     main_window = tk.Tk()
@@ -36,11 +98,11 @@ def create_main_menu():
     main_window.configure(bg='#383838')
 
     # Create the header label
-    header_label = tk.Label(main_window, text='Server Profile', font=('Arial', 18), fg='#FFFFFF', bg='#383838')
+    header_label = tk.Label(main_window, text='Server', font=('Arial', 18), fg='#FFFFFF', bg='#383838')
     header_label.pack(pady=10)
 
     # Create the profile selection dropdown menu
-    profile_options = ['Profile 1', 'Profile 2', 'Profile 3'] # Replace with actual profiles
+    profile_options = ['Server 1', 'Server 2', 'Server 3'] # Replace with actual profiles
     selected_profile = tk.StringVar()
     selected_profile.set(profile_options[0])
     profile_menu = tk.OptionMenu(main_window, selected_profile, *profile_options)
@@ -48,7 +110,7 @@ def create_main_menu():
     profile_menu.pack(pady=10)
 
     # Create the profile edit button
-    edit_button = tk.Button(main_window, text='Edit Profile', font=('Arial', 12), bg='#4F4F4F', fg='#FFFFFF', activebackground='#808080', activeforeground='#FFFFFF', highlightthickness=0, command=lambda: edit_profile_and_destroy_main(selected_profile.get(), main_window))
+    edit_button = tk.Button(main_window, text='Edit Server', font=('Arial', 12), bg='#4F4F4F', fg='#FFFFFF', activebackground='#808080', activeforeground='#FFFFFF', highlightthickness=0, command=lambda: edit_profile_and_destroy_main(selected_profile.get(), main_window))
     edit_button.pack(pady=10)
 
     main_window.mainloop()
@@ -59,7 +121,7 @@ def create_profile_edit(profile_name):
     
     # Create the profile edit window
     profile_window = tk.Tk()
-    profile_window.title(f'{profile_name} Profile Editor')
+    profile_window.title(f'{profile_name}')
     profile_window.geometry('500x500')
 
     # Create the header frame
@@ -67,7 +129,7 @@ def create_profile_edit(profile_name):
     header_frame.pack(fill=tk.X)
 
     # Create the header label
-    header_label = tk.Label(header_frame, text=f'{profile_name} Profile Editor', font=('Helvetica', 20), 
+    header_label = tk.Label(header_frame, text=f'Administrating: {profile_name}', font=('Helvetica', 20), 
                             bg='#2C3E50', fg='white', padx=10)
     header_label.pack(side=tk.LEFT)
 
@@ -126,12 +188,12 @@ def create_profile_edit(profile_name):
     update_button.pack(side=tk.LEFT, padx=10)
 
     # Create the save button
-    save_button = tk.Button(footer_frame, text='Save Profile', font=('Helvetica', 14), 
+    save_button = tk.Button(footer_frame, text='Save Server', font=('Helvetica', 14), 
                             command=lambda: save_profile(profile_name, server_dir_input.get(), mod_dirs_input.get()))
     save_button.pack(side=tk.LEFT, padx=10)
 
     # Create the back button
-    menu_button = tk.Button(footer_frame, text='Select Profile', font=('Helvetica', 14), 
+    menu_button = tk.Button(footer_frame, text='Select Server', font=('Helvetica', 14), 
                             command=lambda: return_to_menu(profile_window))
     menu_button.pack(side=tk.LEFT, padx=10)
 

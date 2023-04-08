@@ -1,10 +1,25 @@
+import os
 import subprocess
+import json
 from pathlib import Path
 import shutil
-import os
 import datetime
+from flask import Flask, render_template, request, redirect, url_for
 
-server_params = r"-profiles=E:\a3profiles\server -ranking=E:\rankings\ranks.log -cfg=basic.cfg -malloc=system -port=2302 -config=CONFIG_server.cfg -loadMissionToMemory -limitFPS=100"
+app = Flask(__name__)
+
+# Load the configuration from the config file
+with open('config.json') as f:
+    config = json.load(f)
+
+# Set up the default server directory and mod directories
+server_dir = config['server_dir']
+keys_dir = os.path.join(server_dir, 'keys')
+mod_dirs = config['mod_dirs']
+server_params = config['start_params']
+
+if not os.path.exists('profiles'):
+    os.makedirs('profiles')
 
 def update_mod_keys(keys_dir, mod_dirs):
     # clear all .bikey files from the keys folder
@@ -33,9 +48,6 @@ def update_mod_keys(keys_dir, mod_dirs):
 
     print('Mod keys updated.')
 
-import os
-import subprocess
-
 def start_server(server_dir, mod_dirs):
     # Search for the server executable in the server directory
     for file in os.listdir(server_dir):
@@ -63,3 +75,56 @@ def start_server(server_dir, mod_dirs):
 def stop_server():
     subprocess.run(['taskkill', '/f', '/im', 'arma3server_x64.exe'])
     print('Server stopped.')
+
+@app.route('/')
+def index():
+    profile_options = ['Server 1', 'Server 2', 'Server 3']  # Replace with actual profiles
+    return render_template('index.html', profile_options=profile_options)
+
+
+@app.route('/edit_profile/<profile_name>')
+def edit_profile(profile_name):
+    load_profile(profile_name)
+    return render_template('edit_profile.html', profile_name=profile_name, server_dir=server_dir, mod_dirs=';'.join(mod_dirs))
+
+
+@app.route('/save_profile', methods=['POST'])
+def save_profile():
+    profile_name = request.form['profile_name']
+    server_dir_input = request.form['server_dir']
+    mod_dirs_input = request.form['mod_dirs']
+
+    save_profile_to_file(profile_name, server_dir_input, mod_dirs_input.split(';'))
+
+    return redirect(url_for('index'))
+
+
+@app.route('/start_server', methods=['POST'])
+def start_server_route():
+    server_dir_input = request.form['server_dir']
+    mod_dirs_input = request.form['mod_dirs']
+
+    start_server(server_dir_input, mod_dirs_input.split(';'))
+
+    return "Server started", 200
+
+
+@app.route('/stop_server', methods=['POST'])
+def stop_server_route():
+    stop_server()
+    return "Server stopped", 200
+
+
+@app.route('/update_mod_keys', methods=['POST'])
+def update_mod_keys_route():
+    mod_dirs_input = request.form['mod_dirs']
+
+    update_mod_keys(keys_dir, mod_dirs_input.split(';'))
+
+    return "Mod keys updated", 200
+
+# Rest of the functions, modified to work with the web application
+# ...
+
+if __name__ == '__main__':
+    app.run()

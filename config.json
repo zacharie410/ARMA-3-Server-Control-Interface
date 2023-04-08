@@ -1,0 +1,10 @@
+{
+    "server_dir": "E:/a3master",
+    "keys_dir": "E:/a3master/keys",
+    "mod_dirs": [
+        "E:/a3mods",
+        "D:/a3mods",
+        "F:/a3mods"
+    ],
+    "start_params": "-profiles=E:/a3profiles/server -ranking=E:/rankings/ranks.log -cfg=basic.cfg -malloc=system -port=2302 -config=CONFIG_server.cfg -loadMissionToMemory -limitFPS=100"
+}

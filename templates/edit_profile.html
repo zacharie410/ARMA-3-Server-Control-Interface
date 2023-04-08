@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Profile</title>
+</head>
+<body>
+    <h1>Administrating: {{ profile_name }}</h1>
+    <form method="post" action="/save_profile">
+        <input type="hidden" name="profile_name" value="{{ profile_name }}">
+        <label for="server_dir">Server Directory:</label>
+        <input type="text" id="server_dir" name="server_dir" value="{{ server_dir }}">
+        <br><br>
+        <label for="mod_dirs">Mod Directories:</label>
+        <input type="text" id="mod_dirs" name="mod_dirs" value="{{ mod_dirs }}">
+        <br><br>
+        <input type="submit" value="Save Server">
+    </form>
+    <br>
+    <button type="button" onclick="startServer()">Start Server</button>
+    <button type="button" onclick="stopServer()">Stop Server</button>
+    <button type="button" onclick="updateModKeys()">Update Mod Keys</button>
+    <br><br>
+    <a href="/">Return to server selection</a>
+
+    <script>
+        async function startServer() {
+            const serverDir = document.querySelector('input[name="server_dir"]').value;
+            const modDirs = document.querySelector('input[name="mod_dirs"]').value;
+            const response = await fetch('/start_server', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `server_dir=${encodeURIComponent(serverDir)}&mod_dirs=${encodeURIComponent(modDirs)}`
+            });
+
+            if (response.ok) {
+                alert('Server started');
+            } else {
+                alert('Error starting server');
+            }
+        }
+
+        async function stopServer() {
+            const response = await fetch('/stop_server', { method: 'POST' });
+
+            if (response.ok) {
+                alert('Server stopped');
+            } else {
+                alert('Error stopping server');
+            }
+        }
+
+        async function updateModKeys() {
+            const modDirs = document.querySelector('input[name="mod_dirs"]').value;
+            const response = await fetch('/update_mod_keys', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `mod_dirs=${encodeURIComponent(modDirs)}`
+            });
+
+            if (response.ok) {
+                alert('Mod keys updated');
+            } else {
+                alert('Error updating mod keys');
+            }
+        }
+    </script>
+</body>
+</html>
