@@ -7,6 +7,13 @@ from pathlib import Path
 import shutil
 import datetime
 
+bg_color = '#2C3E50'
+text_color = '#ECF0F1'
+button_color = '#34495E'
+button_hover_color = '#4F4F4F'
+header_color = '#1ABC9C'
+
+
 def get_server_dir():
     # Find the Steam installation directory from the registry
     steam_dir = None
@@ -54,8 +61,6 @@ def get_workshop_dir():
         workshop_dir = input("ARMA 3 Workshop path: ")
 
     return workshop_dir
-
-
 
 def update_mod_keys(keys_dir, mod_dirs, server_params):
     # clear all .bikey files from the keys folder
@@ -107,7 +112,6 @@ def start_server(keys_dir, mod_dirs, server_params):
     # Start the server process
     subprocess.Popen(args, creationflags=subprocess.CREATE_NEW_CONSOLE)
 
-    
 def stop_server():
     subprocess.run(['taskkill', '/f', '/im', 'arma3server_x64.exe'])
     print('Server stopped.')
@@ -141,49 +145,48 @@ def create_main_menu():
     icon_image = Image.open('./app_icon.png')
     tk_icon = ImageTk.PhotoImage(icon_image)
 
-
     main_window.wm_iconphoto(True, tk_icon)
     main_window.title('ARMA 3 Server Control')
     main_window.geometry('600x400')
-    main_window.configure(bg='#383838')
+    main_window.configure(bg=bg_color)
 
     # Create the header label
-    header_label = tk.Label(main_window, text='Server Profile', font=('Arial', 18), fg='#FFFFFF', bg='#383838')
+    header_label = tk.Label(main_window, text='Server Profile', font=('Arial', 18), fg=text_color, bg=bg_color)
     header_label.pack(pady=10)
 
     # Create the profile selection dropdown menu
-    profile_options = ['Profile 1', 'Profile 2', 'Profile 3'] # Replace with actual profiles
+    profile_options = ['Server 1', 'Server 2', 'Server 3'] # Replace with actual profiles
     selected_profile = tk.StringVar()
     selected_profile.set(profile_options[0])
     profile_menu = tk.OptionMenu(main_window, selected_profile, *profile_options)
-    profile_menu.configure(font=('Arial', 12), bg='#4F4F4F', fg='#FFFFFF', activebackground='#808080', activeforeground='#FFFFFF', highlightthickness=0)
+    profile_menu.configure(font=('Arial', 12), bg=button_color, fg=text_color, activebackground=button_hover_color, activeforeground=text_color, highlightthickness=0)
     profile_menu.pack(pady=10)
 
     # Create the profile edit button
-    edit_button = tk.Button(main_window, text='Edit Profile', font=('Arial', 12), bg='#4F4F4F', fg='#FFFFFF', activebackground='#808080', activeforeground='#FFFFFF', highlightthickness=0, command=lambda: edit_profile_and_destroy_main(selected_profile.get(), main_window))
+    edit_button = tk.Button(main_window, text='Edit Profile', font=('Arial', 12), bg=button_color, fg=text_color, activebackground=button_hover_color, activeforeground=text_color, highlightthickness=0, command=lambda: edit_profile_and_destroy_main(selected_profile.get(), main_window))
     edit_button.pack(pady=10)
 
     main_window.mainloop()
 
+def edit_profile_and_destroy_main(profile_name, main_window):
+    main_window.destroy()
+    create_profile_edit(profile_name)
+
 def create_profile_edit(profile_name):
     load_profile(profile_name)
-    print(f'Loading profile: {profile_name}')
-    print(f'Server directory: {server_dir}')
-    print(f'Keys directory: {keys_dir}')
-    print(f'Mod directories: {mod_dirs}')
-    print(f'Server parameters: {server_params}')
+
     # Create the profile edit window
     profile_window = tk.Tk()
-    profile_window.title(f'{profile_name} Profile Editor')
+    profile_window.title(f'{profile_name} Editor')
     profile_window.geometry('800x720')
 
     # Create the header frame
-    header_frame = tk.Frame(profile_window, bg='#2C3E50')
+    header_frame = tk.Frame(profile_window, bg=header_color)
     header_frame.pack(fill=tk.X)
 
     # Create the header label
-    header_label = tk.Label(header_frame, text=f'{profile_name} Profile Editor', font=('Helvetica', 20), 
-                            bg='#2C3E50', fg='white', padx=10)
+    header_label = tk.Label(header_frame, text=f'{profile_name}', font=('Helvetica', 20),
+                        bg=header_color, fg=text_color, padx=10)
     header_label.pack(side=tk.LEFT)
 
     # Create the server directory frame
@@ -201,8 +204,14 @@ def create_profile_edit(profile_name):
 
     # Create the server directory browse button
     server_dir_button = tk.Button(server_dir_frame, text='Browse', font=('Helvetica', 14), 
-                                  command=lambda: browse_for_server_dir(server_dir_input))
+                                command=lambda: browse_for_server_dir(server_dir_input))
     server_dir_button.pack(side=tk.LEFT)
+
+    # Create a button to open the server directory
+    server_dir_open_button = tk.Button(server_dir_frame, text='Open server dir', font=('Helvetica', 14),
+                                    command=lambda: os.startfile(server_dir_input.get().split(";")[0]))
+    server_dir_open_button.pack(side=tk.LEFT)
+
 
     # Create the mod directory frame
     mod_dirs_frame = tk.Frame(profile_window)
@@ -217,10 +226,14 @@ def create_profile_edit(profile_name):
     mod_dirs_input.pack(side=tk.LEFT, padx=10)
     mod_dirs_input.insert(tk.END, mod_dirs)
 
-    # Create the mod directory browse button
     mod_dirs_button = tk.Button(mod_dirs_frame, text='Browse', font=('Helvetica', 14), 
-                                 command=lambda: browse_for_mod_dirs(mod_dirs_input))
+                                command=lambda: browse_for_mod_dirs(mod_dirs_input))
     mod_dirs_button.pack(side=tk.LEFT)
+
+    # Create a button to open the first mod directory in the list
+    open_mod_dir_button = tk.Button(mod_dirs_frame, text='Open mod dir', font=('Helvetica', 14), 
+                                    command=lambda: os.startfile(mod_dirs_input.get().split(";")[0]))
+    open_mod_dir_button.pack(side=tk.LEFT)
 
     # Create the server parameters frame
     params_frame = tk.Frame(profile_window)
@@ -242,7 +255,7 @@ def create_profile_edit(profile_name):
     select_param_frame.pack(side=tk.TOP)
 
     # Create the default parameter text
-    default_param = tk.StringVar(profile_window, 'Select a parameter...')
+    default_param = tk.StringVar(profile_window, 'Insert a parameter...')
 
     # Create the server parameters options menu
     params_options = ['-profiles', '-config', '-serverMod', '-world', '-name', '-cfg', '-autoinit',
@@ -257,10 +270,9 @@ def create_profile_edit(profile_name):
     params_menu.pack(pady=5)
 
     # Create the server parameters help button
-    params_help_button = tk.Button(params_frame, text='HELP?', font=('Helvetica', 12),
+    params_help_button = tk.Button(params_frame, text='Parameter Reference', font=('Helvetica', 12),
                                     command=lambda: show_params_help_guide())
     params_help_button.pack(side=tk.TOP, padx=10)
-
 
     # Function to show the parameters help guide
     def show_params_help_guide():
@@ -327,7 +339,7 @@ def create_profile_edit(profile_name):
         mod_dirs = [workshop_dir]
 
         # Set the default server parameters
-        server_params = "-name=MyServer -port=2302 -password=12345 -appId=107410"
+        server_params = "-name=MyServer -port=2302 -password=12345"
 
         # Update the input fields in the profile editor window
         server_dir_input.delete(0, tk.END)
@@ -336,6 +348,24 @@ def create_profile_edit(profile_name):
         mod_dirs_input.insert(0, ';'.join(mod_dirs))
         params_text.delete('1.0', tk.END)
         params_text.insert(tk.END, server_params)
+
+    #Stylize
+    profile_window.config(bg=bg_color)
+    server_dir_frame.config(bg=bg_color)
+    mod_dirs_frame.config(bg=bg_color)
+    params_frame.config(bg=bg_color)
+    select_param_frame.config(bg=bg_color)
+    button_frame.config(bg=bg_color)
+    footer_frame.config(bg=bg_color)
+    #labels
+    server_dir_label.config(fg=text_color,bg=bg_color)
+    mod_dirs_label.config(fg=text_color,bg=bg_color)
+    params_label.config(fg=text_color,bg=bg_color)
+    #buttons
+    server_dir_button.config(bg=button_color, fg=text_color, activebackground=button_hover_color, activeforeground=text_color, highlightthickness=0)
+    mod_dirs_button.config(bg=button_color, fg=text_color, activebackground=button_hover_color, activeforeground=text_color, highlightthickness=0)
+    params_help_button.config(bg=button_color, fg=text_color, activebackground=button_hover_color, activeforeground=text_color, highlightthickness=0)
+
 
     profile_window.mainloop()
 
@@ -384,8 +414,14 @@ def load_profile(selected_profile):
     # Create the profile file path
     profile_path = os.path.join('profiles', f'{selected_profile}.txt')
 
-    # Read the server directory, keys directory, mod directories, and server parameters from the profile file
+    # Default values for server_dir, keys_dir, mod_dirs, and server_params
+    default_server_dir = 'path/to/default_server_dir'
+    default_keys_dir = 'path/to/default_keys_dir'
+    default_mod_dirs = 'path/to/default_mod_dirs'
+    default_server_params = 'default_server_params'
+
     if os.path.exists(profile_path):
+        # Read the server directory, keys directory, mod directories, and server parameters from the profile file
         with open(profile_path, 'r') as f:
             for line in f:
                 if line.startswith('server_dir='):
@@ -400,6 +436,19 @@ def load_profile(selected_profile):
                 elif line.startswith('server_params='):
                     global server_params
                     server_params = line.replace('server_params=', '').strip().split(' ')
+    else:
+        # Create a new profile with default values
+        with open(profile_path, 'w') as f:
+            f.write(f'server_dir={default_server_dir}\n')
+            f.write(f'keys_dir={default_keys_dir}\n')
+            f.write(f'mod_dirs={default_mod_dirs}\n')
+            f.write(f'server_params={default_server_params}\n')
+
+        # Set the global variables to the default values
+        server_dir = default_server_dir
+        keys_dir = default_keys_dir
+        mod_dirs = default_mod_dirs
+        server_params = default_server_params.split(' ')
 
 
 
