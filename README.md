@@ -1,10 +1,6 @@
 # ARMA 3 Server Control
-ARMA 3 Server Control is a Python script that simplifies the process of managing an ARMA 3 server by automating common tasks and providing a graphical interface for easy server management.
-
-![ARMA 3 SERVER CONTROL INTERFACE](https://repository-images.githubusercontent.com/613191486/77209a21-3028-4626-9789-eb506c8fb03d)
-
 ### The Arma 3 Control Interface is a graphical user interface (GUI) designed to manage and control an Arma 3 dedicated server. The interface provides a user-friendly way to manage server settings, mod directories, and server parameters without the need to directly edit configuration files or use command-line tools. The key features and functionality of this Arma 3 Control Interface include:
-
+![ARMA 3 SERVER CONTROL INTERFACE](https://repository-images.githubusercontent.com/613191486/7e889120-a63a-4198-a5ea-f5bb5cfc8ed3)
 #### Profile Management: The interface allows users to create, edit, save, and load multiple server profiles. Each profile contains server settings, mod directories, and server parameters specific to that profile.
 
 #### Server Directory Management: Users can browse for and select the server directory, which contains the Arma 3 dedicated server installation. The interface also provides an option to open the server directory in the file explorer.
