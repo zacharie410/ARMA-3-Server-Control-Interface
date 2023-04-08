@@ -1,0 +1,64 @@
+========================
+Arma 3 Server Parameters:
+========================
+============
+Introduction:
+============
+Server parameters are command-line options that allow you to customize the behavior of your Arma 3 server. They can be used to improve performance, enhance security, and configure various server settings.
+====================
+Server Configuration:
+====================
+* profiles <path>: Set an alternate location for the user profile files.
+* config=<path>: Use a specific configuration file.
+* serverMod=<path>: Load a mod in addition to the startup mods.
+* world=<string>: Select a world loaded by default.
+* name=<string>: Use a custom server name.
+* cfg=<path>: Specify a configuration file to use.
+* autoinit: Auto initializes a mission.
+===========
+Performance:
+===========
+* nologs: Disables log creation.
+* nosplash: Bypasses the splash screens on startup.
+* noFilePatching: Disables file patching.
+* noSound: Disables all sound.
+* enableHT: Enable Hyper Threading.
+* hugePages: Enable huge pages.
+* malloc=<string>: Specify the memory allocator.
+* maxMem=<value>: Set the maximum amount of system memory the game is allowed to use. Example: -maxMem=3072.
+* maxVRAM=<value>: Set the maximum amount of video memory the game is allowed to use. Example: -maxVRAM=2047.
+* noPause: Disables pausing of the server when the window loses focus.
+* noPauseMP: Disables pausing of the server when the multiplayer window loses focus.
+* exThreads=<value>: Set the number of threads used for loading external data.
+========
+Security:
+========
+* filePatching: Enables file patching.
+* port=<value>: Set the port the server listens on. Example: -port=2302.
+* password=<string>: Set the server password.
+* pid=<value>: Set the file name to be used for storing the process ID.
+* loadMissionToMemory: Load the mission into memory.
+* ip=<value>: Set the IP address the server listens on.
+* bepath=<value>: Set the path to the BattlEye directory.
+* beparams=<value>: Set BattlEye parameters.
+* beprofilename=<value>: Set the profile name used by BattlEye.
+* battleeye: Enable BattlEye.
+* checkSignatures: Enable signature checking.
+=====
+Other:
+=====
+* rankings: Enable the server to collect player rankings.
+* serverLog: Enables the creation of server logs.
+* netlog: Enables the creation of network logs.
+* h: Display help information.
+* help: Display help information.
+* ?: Display help information.
+* showScriptErrors: Show script errors.
+* par=<value>: Specify parameter(s) to execute.
+* limitFPS=<value>: Set the maximum framerate. Example: -limitFPS=50.
+Note: Spaces in path names should be enclosed in quotes (e.g. -profiles="C:\My Profile").
+========
+Examples:
+========
+Start server with custom profile location:
+-profiles=C:\Arma3\MyProfiles

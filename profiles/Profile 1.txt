@@ -1,2 +1,4 @@
-server_dir=E:/a3master
-mod_dirs=D:/a3mods;E:/a3mods;G:/a3mods;
+server_dir=D:\Steam\steamapps\common\Arma 3 Server
+keys_dir=D:\Steam\steamapps\common\Arma 3 Server\keys
+mod_dirs=D:\Steam\steamapps\common\Arma 3\!Workshop
+server_params=-name=MyServer -port=2302 -password=12345

@@ -4,9 +4,57 @@ import shutil
 import os
 import datetime
 
-server_params = r"-profiles=E:\a3profiles\server -ranking=E:\rankings\ranks.log -cfg=basic.cfg -malloc=system -port=2302 -config=CONFIG_server.cfg -loadMissionToMemory -limitFPS=100"
+def get_server_dir():
+    # Find the Steam installation directory from the registry
+    steam_dir = None
+    try:
+        import winreg
+        with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\WOW6432Node\Valve\Steam") as key:
+            steam_dir = winreg.QueryValueEx(key, "InstallPath")[0]
+    except Exception:
+        pass
 
-def update_mod_keys(keys_dir, mod_dirs):
+    if steam_dir is None:
+        steam_dir = input("Unable to find Steam installation directory. Please enter the path manually: ")
+
+    # Find the ARMA 3 Dedicated Server folder
+    server_dir = os.path.join(steam_dir, "steamapps", "common", "Arma 3 Server")
+    if not os.path.exists(server_dir):
+        print("Unable to find ARMA 3 Dedicated Server directory. Please enter the path manually.")
+        server_dir = input("ARMA 3 Dedicated Server path: ")
+
+    return server_dir
+
+def get_workshop_dir():
+    # Find the Steam installation directory from the registry
+    steam_dir = None
+    try:
+        import winreg
+        with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\WOW6432Node\Valve\Steam") as key:
+            steam_dir = winreg.QueryValueEx(key, "InstallPath")[0]
+    except Exception:
+        pass
+
+    if steam_dir is None:
+        steam_dir = input("Unable to find Steam installation directory. Please enter the path manually: ")
+
+    # Find the ARMA 3 installation folder
+    arma_dir = os.path.join(steam_dir, "steamapps", "common", "Arma 3")
+    if not os.path.exists(arma_dir):
+        print("Unable to find ARMA 3 installation directory. Please enter the path manually.")
+        arma_dir = input("ARMA 3 installation path: ")
+
+    # Find the !Workshop folder inside the ARMA 3 installation folder
+    workshop_dir = os.path.join(arma_dir, "!Workshop")
+    if not os.path.exists(workshop_dir):
+        print("Unable to find ARMA 3 Workshop directory. Please enter the path manually.")
+        workshop_dir = input("ARMA 3 Workshop path: ")
+
+    return workshop_dir
+
+
+
+def update_mod_keys(keys_dir, mod_dirs, server_params):
     # clear all .bikey files from the keys folder
     print('Clearing old .bikey files from the keys folder...')
     for file in Path(keys_dir).glob('*.bikey'):
@@ -36,7 +84,7 @@ def update_mod_keys(keys_dir, mod_dirs):
 import os
 import subprocess
 
-def start_server(server_dir, mod_dirs):
+def start_server(server_dir, mod_dirs, server_params):
     # Search for the server executable in the server directory
     for file in os.listdir(server_dir):
         if file.startswith('arma3server_x64'):
@@ -54,7 +102,7 @@ def start_server(server_dir, mod_dirs):
                     mods.append(os.path.join(mod_dir, mod_folder))
 
     # Build the command line arguments
-    args = [server_exe] + server_params.split() + ['-mod=' + ';'.join(mods)]
+    args = [server_exe] + server_params + ['-mod=' + ';'.join(mods)]
 
     # Start the server process
     subprocess.Popen(args, creationflags=subprocess.CREATE_NEW_CONSOLE)
